@@ -1,15 +1,26 @@
 ## Task
-Input:
-- JSON string (pretty formatted)
-- set of strings - field names which must be masked
-- and mask (also a string)
+You are a security specialist. You found an issue - HTTP logs contains 
+JSON bodies which contains sensitive data in some of their fields. 
+You need to mask only sensitive data and keep HTTP bodies in logs.
 
-Output:
+### Input
+- **json** - a JSON string (pretty formatted)
+- **fields** - field names (set of strings) which must be masked
+- **mask** - and a mask (also a string)
 
-JSON string (pretty formatted) with all fields masked,
+Constraints
+- **json** - length < 10^5
+- **fields** - size < 10^5
+- **mask** - length < 100; 
+it is guaranteed that JSON length after masking will not be longer than 
+the original JSON length.
+
+
+### Output
+JSON string (pretty formatted) with all fields masked, 
 which names appear in fields names.
 
-Example input:
+### Example input:
 JSON string:
 ```json
 {
@@ -18,16 +29,14 @@ JSON string:
 ```
 Field names:
 ```kotlin
-setOf(
-    "hello"
-)
+"hello"
 ```
 Mask:
 ```kotlin
 "#"
 ```
 
-Example output:
+### Example output:
 ```json
 {
   "hello": "#"
