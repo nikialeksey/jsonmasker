@@ -1,10 +1,13 @@
 package com.alexeycode.jsonmasker
 
-import com.google.gson.Gson
+import com.google.gson.FormattingStyle
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 
-private val gson = Gson()
+private val gson = GsonBuilder()
+    .setFormattingStyle(FormattingStyle.PRETTY.withIndent("    "))
+    .create()
 
 fun maskGson(json: String, fields: Set<String>, mask: String): String {
     val root = JsonParser.parseString(json)
