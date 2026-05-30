@@ -1,0 +1,13 @@
+[versions]
+gson = "2.14.0"
+jacksonDatabind = "2.21.4"
+junit = "4.13.2"
+kotlinxSerializationJson = "1.11.0"
+
+[libraries]
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+
