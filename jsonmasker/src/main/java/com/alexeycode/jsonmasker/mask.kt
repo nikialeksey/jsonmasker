@@ -1,58 +1,61 @@
 package com.alexeycode.jsonmasker
 
 fun mask(j: String, fs: Set<String>, m: String): String {
-    val r = j.toCharArray() // result
+    val jLen = j.length
+    val r = CharArray(jLen) // result
 
-    val f = StringBuilder() // buffer for field name
+    var f = 0 // buffer for field name
+    var fP = 0 // buffer pointer
     var p = 0 // pointer for original JSON
     var rP = 0 // pointer for result array
-    while (p < j.length) {
-        if (j[p] == ':' && f.isNotEmpty()) {
-            if (f.toString() in fs) {
+    while (p < jLen) {
+        if (j[p] == ':' && fP > 0) {
+            if (r.concatToString(f, fP) in fs) {
                 r[rP] = j[p]; p++; rP++ // handle semicolon
-                while (p < j.length && j[p] == ' ') { r[rP] = j[p]; p++; rP++ } // handle spaces
+                while (p < jLen && j[p] == ' ') r[rP++] = j[p++] // handle spaces
                 if (j[p] == '{') {
                     var b = 1 // number of brackets
                     p++
-                    r[rP++] = '"'; for (mC in m) r[rP++] = mC; r[rP++] = '"' // insert mask
-                    while (p < j.length && b > 0) { // skip everything till object end
+                    while (p < jLen && b > 0) { // skip everything till object end
                         if (j[p] == '{') b++
                         else if (j[p] == '}') b--
                         p++
                     }
+
+                    r[rP++] = '"'; for (mC in m) r[rP++] = mC; r[rP++] = '"' // insert mask
                 } else if (j[p] == '[') {
                     var b = 1 // number of brackets
                     p++
-                    r[rP++] = '"'; for (mC in m) r[rP++] = mC; r[rP++] = '"' // insert mask
-                    while (p < j.length && b > 0) { // skip everything till array end
+                    while (p < jLen && b > 0) { // skip everything till array end
                         if (j[p] == '[') b++
                         else if (j[p] == ']') b--
                         p++
                     }
+
+                    r[rP++] = '"'; for (mC in m) r[rP++] = mC; r[rP++] = '"' // insert mask
                 } else if (j[p] == '"') {
                     p++
-                    r[rP++] = '"'; for (mC in m) r[rP++] = mC; r[rP++] = '"' // insert mask
-                    while (p < j.length && j[p] != '"') p++ // skip the string
+                    while (p < jLen && j[p] != '"') p++ // skip the string
                     p++
+
+                    r[rP++] = '"'; for (mC in m) r[rP++] = mC; r[rP++] = '"' // insert mask
                 }
-                f.clear()
+                fP = 0
             } else {
-                f.clear() // field should not be masked
-                r[rP] = j[p]; p++; rP++
+                fP = 0 // field should not be masked
+                r[rP++] = j[p++]
             }
         } else if (j[p] == '"') { // read field or value (place for optimization)
-            r[rP] = j[p]; p++; rP++
-            f.clear()
-            while (p < j.length && j[p] != '"') {
-                f.append(j[p])
-                r[rP] = j[p]; p++; rP++ // don't forget to mirror it to the result
-            }
-            r[rP] = j[p]; p++; rP++ // handle " symbol also
+            r[rP++] = j[p++]
+            f = rP
+            while (p < jLen && j[p] != '"') r[rP++] = j[p++]
+            fP = rP
+            r[rP++] = j[p++] // handle " symbol also
         } else if (j[p] == ',') { // comma is a signal that we should reset our field name
-            f.clear()
-            r[rP] = j[p]; p++; rP++ // handle comma
+            fP = 0
+            r[rP++] = j[p++] // handle comma
         } else { // other symbols - just print as is
-            r[rP] = j[p]; p++; rP++
+            r[rP++] = j[p++]
         }
     }
 
